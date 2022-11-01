@@ -1,9 +1,9 @@
 import React, { useCallback } from "react";
 
-const TextInput = ({ label, handleSearchText }) => {
+const TextInput = ({ label, optimisedVersion }) => {
   
   const searchTextHandler = (e) => {    
-    handleSearchText(e.target.value);
+    optimisedVersion(e.target.value);
   }
 
   return (

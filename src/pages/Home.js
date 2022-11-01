@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   // States
-  const [npmList, setNpmList] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [searchList, setSearchList] = useState([]);
   const [favoriteText, setFavoriteText] = useState("");
@@ -16,26 +15,33 @@ const Home = () => {
   const [radioValue, setRadioValue] = useState("");
   const [radioError, setRadioError] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // getting all npm list from api
-    const getNpmPackages = async () => {
-      const npmPackageList = await NpmService.fetchNpmPackages();
-      setNpmList(npmPackageList.data.results);
-    };
-    getNpmPackages();
-  }, []);
   
+  //Dobouncing
+  function debounce(fn, delay) {
+    let timer;
+    return function () {
+      let context = this,
+        args = arguments;
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        fn.apply(context, args);
+      }, delay);
+    };
+  }
+
 
   // search text handler 
-  const handleSearchText = (typedText) => {
-    const newList =  npmList.filter(
+  const handleSearchText =async (typedText) => {
+    const npmPackageList = await NpmService.fetchNpmPackages();
+    setSearchText(typedText.toLowerCase());
+    const newList =  npmPackageList.data.results.filter(
       (list) => list.package.name.includes(typedText.toLowerCase()) && list
     );
-      
-    setSearchText(typedText.toLowerCase());
     setSearchList(typedText ? newList : []);
   };
+
+  const optimisedVersion = useCallback(debounce(handleSearchText,500), [])
+
 
   // favorite textarea handler 
   const handleFavoriteText = (favText) => {
@@ -95,7 +101,7 @@ const Home = () => {
     <div className="flex flex-col max-w-5xl mx-auto  m-10">
       <TextInput
         label={"Search for NPM Packages"}
-        handleSearchText={handleSearchText}
+        optimisedVersion={optimisedVersion}
       />
       {/* length>0, if want to hide label  */}
       {searchList && (

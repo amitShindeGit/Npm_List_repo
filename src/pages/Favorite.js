@@ -48,7 +48,7 @@ const Favorite = () => {
           <Button text="Add Fav" />
         </Link>}
       </div>
-      {favList && favList ? (
+      {favList && favList.length > 0 ? (
         <FavoriteList
           favList={favList}
           deleteHandler={deleteHandler}
